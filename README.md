@@ -27,7 +27,7 @@ Here $M$ represents the unitary (and self-adjoint) matrix associated with a two 
 1. Clone this repository
 
 ```shell
-git@github.com:CQCL/hidden_inverse_exp.git
+git clone git@github.com:CQCL/hidden_inverse_exp.git
 ```
 
 2. Now install dependencies with [uv](https://docs.astral.sh/uv/).
