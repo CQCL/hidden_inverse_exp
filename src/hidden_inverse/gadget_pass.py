@@ -1,12 +1,12 @@
 """Script to apply the Hidden inverse technique to Pauli gadget circuits."""
+
 from pytket import Circuit, OpType
 from pytket.predicates import GateSetPredicate
 from pytket.passes import CustomPass, DecomposeBoxes
 from pytket.circuit import PauliExpBox
 
-# from pytket.circuit.display import view_browser
 
-from hseries_decompositions import h_series_seq_pass, h_series_gateset_predicate
+from .hseries import h_series_seq_pass, h_series_gateset_predicate
 
 
 single_qubit_cliffords = {OpType.H, OpType.V, OpType.Vdg}

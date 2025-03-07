@@ -44,4 +44,4 @@ def alternating_cnot_decomp(circ: Circuit) -> Circuit:
     return circ_prime
 
 
-hidden_inverse_alternating_cnots = CustomPass(alternating_cnot_decomp)
+alternating_cnots_pass = CustomPass(alternating_cnot_decomp)

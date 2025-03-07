@@ -1,15 +1,16 @@
 import os
 from glob import glob
-from utils.circuit_builders import get_phase_gadget, get_pauli_gadget
-from phase_gadget_pass import phase_gadget_hi_pass
-from pauli_gadget_pass import (
+
+
+from hidden_inverse.utils.circuit_builders import get_phase_gadget, get_pauli_gadget
+from hidden_inverse.gadget_pass import (
     single_pauli_gadget_hi_pass,
 )
-from pytket import Circuit
-from alternating_cnot_decomposition import hidden_inverse_alternating_cnots
 
-# from pauli_gadget_pass import _partition_pauli_gadget,
-# )
+from pytket import Circuit
+from hidden_inverse.alternating_pass import alternating_cnots_pass
+
+
 from pytket.utils import compare_unitaries
 from pytket.qasm import circuit_from_qasm
 
@@ -17,20 +18,14 @@ PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 CIRCUITS_FOLDER = f"{PROJECT_FOLDER}/qasm_circuits"
 circuit_files = glob(f"{CIRCUITS_FOLDER}/*.qasm")
 
-# from pytket.circuit.display import view_browser
-
-# TODO write more tests - and better ones!
-
 
 def compare_phase_and_pauli_unitaries() -> None:
     circ_phase = get_phase_gadget(0.9, 2)
     circ_pauli = get_pauli_gadget("ZZ", 0.9)
     u1_phase = circ_phase.get_unitary()
     u1_pauli = circ_pauli.get_unitary()
-    phase_gadget_hi_pass.apply(circ_phase)
+
     single_pauli_gadget_hi_pass.apply(circ_pauli)
-    # view_browser(circ1)
-    # view_browser(circ2)
     assert compare_unitaries(circ_phase.get_unitary(), circ_pauli.get_unitary())
     assert compare_unitaries(circ_phase.get_unitary(), u1_phase)
     assert compare_unitaries(circ_pauli.get_unitary(), u1_pauli)
@@ -56,14 +51,9 @@ def test_depth1_pauli_gadget_qasm_circuits() -> None:
     for circuit_file in circuit_files:
         print(f"Testing circuit: ({counter}/{len(circuit_files)})", circuit_file)
         pauli_circuit = circuit_from_qasm(circuit_file)
-        # cut_circuit_list = _partition_pauli_gadget(pauli_circuit)
-        # for circ in cut_circuit_list:
-        #    view_browser(circ)
         u1 = pauli_circuit.get_unitary()
-        # view_browser(pauli_circuit)
         single_pauli_gadget_hi_pass.apply(pauli_circuit)
         u2 = pauli_circuit.get_unitary()
-        # view_browser(pauli_circuit)
         assert compare_unitaries(u1, u2)
         counter += 1
 
@@ -86,17 +76,8 @@ def test_alternating_cnot_decomposition():
         .H(1)
     )
     u1 = circuit.get_unitary()
-    # view_browser(circuit)
-    hidden_inverse_alternating_cnots.apply(circuit)
+    alternating_cnots_pass.apply(circuit)
 
     u2 = circuit.get_unitary()
-    # view_browser(circuit)
 
     assert compare_unitaries(u1, u2)
-
-
-if __name__ == "__main__":
-    compare_phase_and_pauli_unitaries()
-    test_specific_pauli_gadget_circuits()
-    test_depth1_pauli_gadget_qasm_circuits()
-    test_alternating_cnot_decomposition()
